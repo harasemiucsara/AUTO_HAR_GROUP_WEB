@@ -1,0 +1,234 @@
+import os
+D = os.path.dirname(os.path.abspath(__file__))
+
+css = '''
+:root{--bg:#14161b;--card:#181a20;--card2:#1e2028;--fg:#fafafa;--mt:#9ca3af;--red:#d92b2b;--mint:#1abc9c;--brd:#26292f;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Outfit,sans-serif;background:var(--bg);color:var(--fg);display:flex;min-height:100vh;overflow-x:hidden}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.02em}a{text-decoration:none;color:inherit}
+.sidebar{width:72px;background:var(--card);border-right:1px solid var(--brd);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;align-items:center;padding:1.2rem 0;z-index:50;transition:width .3s}
+.sidebar:hover{width:200px}.sidebar:hover .sl{display:block}
+.sl{display:none;font-size:.82rem;color:var(--mt);white-space:nowrap;margin-left:.6rem}
+.sidebar a{display:flex;align-items:center;gap:.4rem;padding:.7rem .9rem;width:100%;color:var(--mt);transition:all .25s;border-radius:0 var(--r) var(--r) 0;font-weight:500;font-size:.95rem}
+.sidebar a:hover,.sidebar a.on{color:var(--fg);background:rgba(217,43,43,.1)}
+.sidebar a:hover svg,.sidebar a.on svg{color:var(--red)}
+.sidebar svg{width:22px;height:22px;flex-shrink:0;color:var(--mt);transition:color .25s}
+.slogo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:2rem;text-align:center;color:var(--fg);line-height:1.1}
+.slogo em{color:var(--red);font-style:normal;display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase}
+.sbot{margin-top:auto;font-size:.65rem;color:var(--mt);text-align:center;padding:0 .5rem}
+.main{margin-left:72px;flex:1;min-height:100vh;transition:margin .3s}
+.hero{position:relative;height:380px;overflow:hidden;display:flex;align-items:flex-end}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80') center/cover}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,rgba(20,22,27,.6) 50%,rgba(20,22,27,.3) 100%)}
+.hero-c{position:relative;z-index:2;padding:2.5rem;width:100%}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.15;margin-bottom:.5rem;animation:fadeUp .8s ease-out}
+.hero h1 em{color:var(--red);font-style:normal}
+.hero p{color:var(--mt);font-size:1rem;animation:fadeUp .8s ease-out .15s both}
+.search-wrap{padding:1.5rem 2.5rem}
+.search-box{display:flex;gap:.6rem;max-width:600px;animation:fadeUp .6s ease-out .3s both}
+.search-box input{flex:1;padding:.7rem 1rem;border-radius:var(--r);border:1px solid var(--brd);background:var(--card);color:var(--fg);font-family:Outfit;font-size:.95rem;transition:border .3s}
+.search-box input:focus{outline:none;border-color:var(--mint);box-shadow:0 0 20px rgba(26,188,156,.15)}
+.search-box button{padding:.7rem 1.4rem;border-radius:var(--r);border:none;background:var(--red);color:#fff;font-family:Outfit;font-weight:600;cursor:pointer;transition:background .3s}
+.search-box button:hover{background:#b32424}
+.content{padding:0 2.5rem 3rem}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.fb{padding:.35rem 1rem;border-radius:2rem;border:1px solid var(--brd);background:var(--card);color:var(--mt);cursor:pointer;font-family:Outfit;font-weight:500;font-size:.82rem;transition:all .3s}
+.fb:hover,.fb.on{border-color:var(--red);color:var(--fg);background:rgba(217,43,43,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;transition:all .35s;animation:fadeUp .5s ease-out both}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4);border-color:rgba(217,43,43,.25)}
+.card-img{height:170px;background:var(--card2);overflow:hidden;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s}.card:hover .card-img img{transform:scale(1.06)}
+.badge{position:absolute;top:.5rem;left:.5rem;background:var(--mint);color:var(--bg);padding:.1rem .55rem;border-radius:2rem;font-size:.68rem;font-weight:700;text-transform:uppercase}
+.card-b{padding:1rem}
+.card-b h3{font-size:.95rem;margin-bottom:.25rem;font-weight:600}
+.card-desc{font-size:.8rem;color:var(--mt);margin-bottom:.7rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-f{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.price{font-family:'Space Grotesk';font-size:1.1rem;font-weight:700}
+.stock{font-size:.72rem;color:var(--mt)}.stock.low{color:var(--red)}
+.btn{padding:.45rem 1rem;border-radius:var(--r);border:none;cursor:pointer;font-family:Outfit;font-weight:600;font-size:.82rem;transition:all .3s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn-r{background:var(--red);color:#fff;width:100%}.btn-r:hover{background:#b32424}
+.btn-m{background:var(--mint);color:var(--bg)}.btn-m:hover{background:#16a085}
+.btn-o{background:transparent;border:1px solid var(--brd);color:var(--fg)}.btn-o:hover{border-color:var(--red);color:var(--red)}
+.empty{text-align:center;padding:3rem;color:var(--mt)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;opacity:0;pointer-events:none;transition:.3s}.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:88vw;background:var(--card);z-index:201;transform:translateX(100%);transition:transform .35s;display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:1.1rem;border-bottom:1px solid var(--brd)}.dh h2{font-size:1.15rem}
+.dx{background:0 0;border:0;color:var(--fg);font-size:1.4rem;cursor:pointer}
+.db{flex:1;overflow-y:auto;padding:.8rem}
+.ci{display:flex;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--brd)}
+.ci img{width:52px;height:52px;object-fit:cover;border-radius:8px}
+.ci-i{flex:1}.ci-i h4{font-size:.85rem}.ci-i small{color:var(--mt);font-size:.75rem}
+.ci-r{text-align:right;display:flex;flex-direction:column;justify-content:space-between;gap:.3rem}
+.ci-r .price{font-size:.85rem}
+.qc{display:flex;align-items:center;gap:.3rem}.qc button{width:22px;height:22px;border-radius:4px;border:1px solid var(--brd);background:var(--bg);color:var(--fg);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.rm{background:0 0;border:0;color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600}
+.df{padding:1.1rem;border-top:1px solid var(--brd)}
+.tot{display:flex;justify-content:space-between;margin-bottom:.8rem;font-weight:600}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:center;justify-content:center}.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);width:460px;max-width:92vw;max-height:90vh;overflow-y:auto;padding:1.8rem}
+.modal h2{margin-bottom:1.2rem;font-size:1.2rem}
+.fg{margin-bottom:.8rem}.fg label{display:block;margin-bottom:.2rem;font-size:.78rem;color:var(--mt);font-weight:500}
+.fg input{width:100%;padding:.55rem .7rem;border-radius:var(--r);border:1px solid var(--brd);background:var(--bg);color:var(--fg);font-family:Outfit;font-size:.9rem}.fg input:focus{outline:none;border-color:var(--mint)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.mbtn{display:flex;gap:.6rem;margin-top:1.2rem}
+.ok-msg{text-align:center;padding:1.5rem 0}.ok-msg h3{color:var(--mint);margin-bottom:.4rem}
+footer{padding:2rem 2.5rem;border-top:1px solid var(--brd);margin-top:2rem}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:1.5rem}
+.fc h4{font-size:.9rem;margin-bottom:.5rem}.fc p,.fc a{font-size:.78rem;color:var(--mt);display:block;margin-bottom:.2rem}.fc a:hover{color:var(--fg)}
+.fcopy{text-align:center;color:var(--mt);font-size:.72rem;border-top:1px solid var(--brd);padding-top:1rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.hero{height:280px}.search-wrap,.content{padding-left:1rem;padding-right:1rem}footer{padding:1.5rem 1rem}.grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+'''
+
+icons = {
+  'home':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  'box':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>',
+  'phone':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+  'cart':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>',
+  'admin':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.29.64.93 1.05 1.6 1.08H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+  'info':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+}
+
+body = f'''
+<div class="sidebar">
+  <div class="slogo">AH<em>Auto Har</em></div>
+  <a href="#" class="on" onclick="scrollMain('top')">{icons['home']}<span class="sl">Acasa</span></a>
+  <a href="#produse" onclick="scrollMain('produse')">{icons['box']}<span class="sl">Produse</span></a>
+  <a href="#despre">{icons['info']}<span class="sl">Despre noi</span></a>
+  <a href="#contact">{icons['phone']}<span class="sl">Contact</span></a>
+  <a href="javascript:void(0)" onclick="toggleCart()">{icons['cart']}<span class="sl">Cos (<span id="sc">0</span>)</span></a>
+  <a href="/admin">{icons['admin']}<span class="sl">Admin</span></a>
+  <div class="sbot">Auto Har Group<br>Suceava</div>
+</div>
+
+<div class="main" id="top">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-c">
+      <h1>Piese Auto din <em>Dezmembrari</em></h1>
+      <p>Import Europa &bull; Garantie &bull; Livrare rapida &bull; Str. Traian Popovici 156, Suceava</p>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input id="searchInput" placeholder="Cauta piese auto..." onkeyup="doSearch(this.value)">
+      <button onclick="doSearch(document.getElementById('searchInput').value)">Cauta</button>
+    </div>
+  </div>
+
+  <div class="content" id="produse">
+    <h2 style="margin-bottom:1rem;font-size:1.3rem">Produse</h2>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"><div class="empty">Se incarca...</div></div>
+
+    <div id="despre" style="margin-top:3rem">
+      <h2 style="margin-bottom:1rem;font-size:1.3rem">De ce Auto Har Group?</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+        <div class="card" style="animation-delay:.1s"><div class="card-b" style="text-align:center;padding:1.3rem">
+          <div style="font-size:2rem;margin-bottom:.3rem">&#9989;</div><h3>Piese Testate</h3><p class="card-desc" style="-webkit-line-clamp:unset">Verificate inainte de vanzare</p>
+        </div></div>
+        <div class="card" style="animation-delay:.2s"><div class="card-b" style="text-align:center;padding:1.3rem">
+          <div style="font-size:2rem;margin-bottom:.3rem">&#128666;</div><h3>Livrare 24-48h</h3><p class="card-desc" style="-webkit-line-clamp:unset">Curier in toata Romania</p>
+        </div></div>
+        <div class="card" style="animation-delay:.3s"><div class="card-b" style="text-align:center;padding:1.3rem">
+          <div style="font-size:2rem;margin-bottom:.3rem">&#128176;</div><h3>Pana la -70%</h3><p class="card-desc" style="-webkit-line-clamp:unset">Fata de piese noi originale</p>
+        </div></div>
+        <div class="card" style="animation-delay:.4s"><div class="card-b" style="text-align:center;padding:1.3rem">
+          <div style="font-size:2rem;margin-bottom:.3rem">&#127760;</div><h3>Import Europa</h3><p class="card-desc" style="-webkit-line-clamp:unset">Germania, Belgia, Olanda</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="contact">
+    <div class="fgrid">
+      <div class="fc"><h4>Auto Har Group</h4><p>Piese auto din dezmembrari Suceava. Import Europa.</p></div>
+      <div class="fc"><h4>Contact</h4><p>Tel: +40 749 707 694</p><p>Tel: +40 748 951 120</p><p>Email: autohargrup@gmail.com</p></div>
+      <div class="fc"><h4>Adresa</h4><p>Str. Traian Popovici 156</p><p>Suceava, Romania</p></div>
+      <div class="fc"><h4>Program</h4><p>L-V: 09:00 - 18:00</p><p>S: 09:00 - 13:00</p><p>D: Inchis</p></div>
+    </div>
+    <div class="fcopy">&copy; 2024 Auto Har Group. Toate drepturile rezervate.</div>
+  </footer>
+</div>
+
+<div class="overlay" id="ov" onclick="toggleCart()"></div>
+<div class="drawer" id="dw">
+  <div class="dh"><h2>Cosul tau</h2><button class="dx" onclick="toggleCart()">&times;</button></div>
+  <div class="db" id="clist"><div class="empty">Cosul este gol</div></div>
+  <div class="df"><div class="tot"><span>Total:</span><span id="ctot">0.00 RON</span></div>
+    <button class="btn btn-m" style="width:100%" onclick="openCO()">Finalizeaza Comanda</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="coM">
+  <div class="modal">
+    <div id="coF">
+      <h2>Finalizeaza Comanda</h2>
+      <div class="fg"><label>Nume complet *</label><input id="cN" placeholder="Ion Popescu"></div>
+      <div class="fg"><label>Email *</label><input id="cE" type="email" placeholder="ion@email.com"></div>
+      <div class="fr"><div class="fg"><label>Telefon</label><input id="cP" placeholder="+40 749..."></div><div class="fg"><label>Oras</label><input id="cC" placeholder="Suceava"></div></div>
+      <div class="fg"><label>Adresa livrare</label><input id="cA" placeholder="Str. Exemplu nr. 1"></div>
+      <div class="tot" style="margin-top:.8rem"><span>Total:</span><span id="coT">0 RON</span></div>
+      <div class="mbtn"><button class="btn btn-o" onclick="closeCO()">Anuleaza</button><button class="btn btn-m" onclick="placeOrder()">Trimite Comanda</button></div>
+    </div>
+    <div id="coOk" class="ok-msg" style="display:none"><h3>&#10004; Comanda plasata!</h3><p style="color:var(--mt);margin-bottom:.8rem">Vei primi confirmarea pe email.</p><button class="btn btn-o" onclick="closeCO()">Inchide</button></div>
+  </div>
+</div>
+'''
+
+js = r'''
+const API="http://localhost:5050/api";let prods=[],cart=JSON.parse(localStorage.getItem("cart")||"[]"),af="all",sq="";
+async function load(){const r=await fetch(API+"/products");prods=await r.json();renderF();renderP();}
+function renderF(){const c=[...new Set(prods.map(p=>p.category).filter(Boolean))];const e=document.getElementById("filters");let h='<button class="fb on" onclick="setF(\'all\',this)">Toate</button>';c.forEach(x=>{h+='<button class="fb" onclick="setF(\''+x+'\',this)">'+esc(x)+'</button>';});e.innerHTML=h;}
+function setF(c,b){af=c;document.querySelectorAll(".fb").forEach(x=>x.classList.remove("on"));b.classList.add("on");renderP();}
+function doSearch(v){sq=v.toLowerCase().trim();renderP();}
+function renderP(){let l=af==="all"?prods:prods.filter(p=>p.category===af);if(sq)l=l.filter(p=>(p.name+' '+p.description+' '+p.category).toLowerCase().includes(sq));
+const e=document.getElementById("grid");if(!l.length){e.innerHTML='<div class="empty">Niciun produs gasit.</div>';return;}
+e.innerHTML=l.map((p,i)=>{const s=p.stock>0,sc=p.stock<=3?"low":"",img=p.image_url||"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&q=70";
+return'<div class="card" style="animation-delay:'+(.05*i)+'s"><div class="card-img"><img src="'+img+'" alt="'+esc(p.name)+'">'+(p.category?'<span class="badge">'+esc(p.category)+'</span>':'')+
+'</div><div class="card-b"><h3>'+esc(p.name)+'</h3><p class="card-desc">'+esc(p.description||"")+'</p><div class="card-f"><span class="price">'+p.price.toFixed(2)+' RON</span><span class="stock '+sc+'">'+(s?"Stoc: "+p.stock:"Epuizat")+'</span></div>'+
+(s?'<button class="btn btn-r" onclick="addC('+p.id+')">Adauga in cos</button>':'<button class="btn btn-o" style="width:100%;opacity:.5;cursor:not-allowed" disabled>Indisponibil</button>')+'</div></div>';}).join("");}
+function addC(id){const p=prods.find(x=>x.id===id);if(!p)return;const e=cart.find(x=>x.id===id);if(e){if(e.q<p.stock)e.q++;}else cart.push({id,q:1});sCart();uCart();}
+function rmC(id){cart=cart.filter(x=>x.id!==id);sCart();uCart();}
+function chQ(id,d){const i=cart.find(x=>x.id===id);if(!i)return;const p=prods.find(x=>x.id===id);i.q+=d;if(i.q<=0)return rmC(id);if(p&&i.q>p.stock)i.q=p.stock;sCart();uCart();}
+function sCart(){localStorage.setItem("cart",JSON.stringify(cart));}
+function gTot(){return cart.reduce((s,c)=>{const p=prods.find(x=>x.id===c.id);return s+(p?p.price*c.q:0);},0);}
+function uCart(){document.getElementById("sc").textContent=cart.reduce((s,c)=>s+c.q,0);
+const e=document.getElementById("clist");if(!cart.length){e.innerHTML='<div class="empty">Cosul este gol</div>';}
+else{e.innerHTML=cart.map(c=>{const p=prods.find(x=>x.id===c.id);if(!p)return"";const img=p.image_url||"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=100&q=60";
+return'<div class="ci"><img src="'+img+'"><div class="ci-i"><h4>'+esc(p.name)+'</h4><small>'+p.price.toFixed(2)+' RON</small></div><div class="ci-r"><span class="price">'+(p.price*c.q).toFixed(2)+'</span><div class="qc"><button onclick="chQ('+c.id+',-1)">-</button><span>'+c.q+'</span><button onclick="chQ('+c.id+',1)">+</button></div><button class="rm" onclick="rmC('+c.id+')">Sterge</button></div></div>';}).join("");}
+document.getElementById("ctot").textContent=gTot().toFixed(2)+" RON";}
+function toggleCart(){document.getElementById("ov").classList.toggle("open");document.getElementById("dw").classList.toggle("open");}
+function openCO(){if(!cart.length)return alert("Cosul este gol!");toggleCart();document.getElementById("coT").textContent=gTot().toFixed(2)+" RON";document.getElementById("coF").style.display="block";document.getElementById("coOk").style.display="none";document.getElementById("coM").classList.add("open");}
+function closeCO(){document.getElementById("coM").classList.remove("open");}
+async function placeOrder(){const n=document.getElementById("cN").value.trim(),em=document.getElementById("cE").value.trim();if(!n||!em)return alert("Completeaza numele si emailul!");
+const items=cart.map(c=>{const p=prods.find(x=>x.id===c.id);return{product_id:c.id,quantity:c.q,price_at_purchase:p?p.price:0};});
+const b={customer_name:n,customer_email:em,customer_phone:document.getElementById("cP").value.trim(),city:document.getElementById("cC").value.trim(),address:document.getElementById("cA").value.trim(),items};
+const r=await fetch(API+"/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});
+if(r.ok){cart=[];sCart();uCart();document.getElementById("coF").style.display="none";document.getElementById("coOk").style.display="block";load();}else alert("Eroare!");}
+function scrollMain(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+function esc(t){if(!t)return"";const d=document.createElement("div");d.textContent=t;return d.innerHTML;}
+load();uCart();
+'''
+
+html = f'''<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Har Group - Piese Auto din Dezmembrari Suceava</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>{css}</style>
+</head>
+<body>
+{body}
+<script>{js}</script>
+</body>
+</html>'''
+
+with open(os.path.join(D, "index.html"), "w", encoding="utf-8") as f:
+    f.write(html)
+print("index.html DONE", len(html), "chars")

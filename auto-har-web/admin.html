@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Auto Har Group</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14161b;--card:#181a20;--card2:#1a1c22;--fg:#fafafa;--muted:#9ca3af;--red:#d92b2b;--red2:#b32424;--mint:#1abc9c;--mint2:#16a085;--border:#26292f;--r:.75rem}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Outfit,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.02em}
+a{text-decoration:none;color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+/* NAV */
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:3.5rem;max-width:1100px;margin:0 auto}
+.logo{font-family:'Space Grotesk';font-size:1.2rem;font-weight:700}.logo span{color:var(--red)}
+.nav-r{display:flex;gap:1rem;align-items:center}
+.nav-r a{color:var(--muted);font-size:.85rem;font-weight:500;transition:color .3s}.nav-r a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:var(--r);border:none;cursor:pointer;font-family:Outfit;font-weight:600;font-size:.85rem;transition:all .3s}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red2)}
+.btn-mint{background:var(--mint);color:var(--bg)}.btn-mint:hover{background:var(--mint2)}
+.btn-out{background:0 0;border:1px solid var(--border);color:var(--fg)}.btn-out:hover{border-color:var(--red);color:var(--red)}
+.btn-sm{padding:.35rem .7rem;font-size:.8rem}
+.btn-danger{background:#991b1b;color:#fff}.btn-danger:hover{background:#7f1d1d}
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 3.5rem)}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:2.5rem;width:380px;max-width:90vw;text-align:center}
+.login-box h2{margin-bottom:1.5rem}
+.login-box input{width:100%;padding:.65rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);color:var(--fg);font-family:Outfit;font-size:.95rem;margin-bottom:1rem}
+.login-box input:focus{outline:none;border-color:var(--mint)}
+.login-err{color:var(--red);font-size:.85rem;margin-bottom:.75rem;display:none}
+/* TABS */
+.tabs{display:flex;gap:0;margin:2rem 0 1.5rem;border-bottom:2px solid var(--border)}
+.tab{padding:.6rem 1.5rem;cursor:pointer;font-weight:600;font-size:.9rem;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .3s}
+.tab:hover{color:var(--fg)}.tab.on{color:var(--mint);border-color:var(--mint)}
+/* FORM */
+.panel{display:none}.panel.on{display:block}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.5rem}
+.form-card h3{margin-bottom:1rem;font-size:1.1rem}
+.fg{margin-bottom:.85rem}
+.fg label{display:block;margin-bottom:.25rem;font-size:.8rem;color:var(--muted);font-weight:500}
+.fg input,.fg textarea{width:100%;padding:.55rem .8rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);color:var(--fg);font-family:Outfit;font-size:.9rem}
+.fg textarea{resize:vertical;min-height:70px}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--mint)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:.6rem .75rem;color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+td{padding:.65rem .75rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:.15rem .6rem;border-radius:2rem;font-size:.7rem;font-weight:600}
+.badge-pending{background:rgba(234,179,8,.15);color:#eab308}
+.badge-ok{background:rgba(26,188,156,.15);color:var(--mint)}
+.actions{display:flex;gap:.4rem}
+.empty-t{text-align:center;padding:2rem;color:var(--muted)}
+/* RESPONSIVE */
+@media(max-width:640px){.fr{grid-template-columns:1fr}table{font-size:.75rem}th,td{padding:.45rem .4rem}}
+</style>
+</head>
+<body>
+
+<nav><div class="nav-inner">
+  <a href="/admin" class="logo">AUTO HAR <span>ADMIN</span></a>
+  <div class="nav-r" id="navRight"><a href="/">Inapoi la magazin</a></div>
+</div></nav>
+
+<!-- LOGIN -->
+<div id="loginView" class="login-wrap">
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <div class="login-err" id="loginErr">Parola incorecta!</div>
+    <input type="password" id="loginPass" placeholder="Parola admin" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn btn-mint" style="width:100%;justify-content:center" onclick="doLogin()">Autentificare</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none">
+<div class="container">
+  <div class="tabs">
+    <div class="tab on" onclick="switchTab('products',this)">Produse</div>
+    <div class="tab" onclick="switchTab('orders',this)">Comenzi</div>
+  </div>
+
+  <!-- PRODUCTS PANEL -->
+  <div class="panel on" id="panProducts">
+    <div class="form-card" id="productForm">
+      <h3 id="formTitle">Adauga Produs Nou</h3>
+      <input type="hidden" id="editId" value="">
+      <div class="fg"><label>Nume produs *</label><input id="pName"></div>
+      <div class="fg"><label>Descriere</label><textarea id="pDesc"></textarea></div>
+      <div class="fr">
+        <div class="fg"><label>Pret (RON) *</label><input id="pPrice" type="number" step="0.01"></div>
+        <div class="fg"><label>Stoc *</label><input id="pStock" type="number"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Categorie</label><input id="pCat" placeholder="Motor, Caroserie..."></div>
+        <div class="fg"><label>URL Imagine</label><input id="pImg" placeholder="https://..."></div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.5rem">
+        <button class="btn btn-mint" onclick="saveProduct()">Salveaza</button>
+        <button class="btn btn-out" onclick="resetForm()">Anuleaza</button>
+      </div>
+    </div>
+    <h3 style="margin-bottom:1rem">Lista Produse</h3>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>ID</th><th>Nume</th><th>Categorie</th><th>Pret</th><th>Stoc</th><th>Actiuni</th></tr></thead>
+      <tbody id="prodTable"><tr><td colspan="6" class="empty-t">Se incarca...</td></tr></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ORDERS PANEL -->
+  <div class="panel" id="panOrders">
+    <h3 style="margin-bottom:1rem">Comenzi Primite</h3>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>ID</th><th>Client</th><th>Email</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+      <tbody id="ordTable"><tr><td colspan="6" class="empty-t">Se incarca...</td></tr></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const API = "http://localhost:5050/api";
+let loggedIn = false;
+
+// LOGIN
+async function doLogin() {
+  const pass = document.getElementById("loginPass").value;
+  const r = await fetch(API + "/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pass }) });
+  const d = await r.json();
+  if (d.success) { loggedIn = true; document.getElementById("loginView").style.display = "none"; document.getElementById("adminPanel").style.display = "block"; loadAll(); }
+  else { document.getElementById("loginErr").style.display = "block"; }
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
+  btn.classList.add("on");
+  document.getElementById(name === "products" ? "panProducts" : "panOrders").classList.add("on");
+}
+
+async function loadAll() { await loadAdminProducts(); await loadOrders(); }
+
+// PRODUCTS
+async function loadAdminProducts() {
+  const r = await fetch(API + "/products");
+  const list = await r.json();
+  const tb = document.getElementById("prodTable");
+  if (!list.length) { tb.innerHTML = '<tr><td colspan="6" class="empty-t">Niciun produs.</td></tr>'; return; }
+  tb.innerHTML = list.map(p =>
+    '<tr><td>' + p.id + '</td><td>' + esc(p.name) + '</td><td>' + esc(p.category||"-") + '</td><td>' + p.price.toFixed(2) + ' RON</td><td>' + p.stock + '</td>' +
+    '<td><div class="actions"><button class="btn btn-sm btn-out" onclick="editProduct(' + p.id + ')">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteProduct(' + p.id + ')">Sterge</button></div></td></tr>'
+  ).join("");
+}
+
+async function saveProduct() {
+  const id = document.getElementById("editId").value;
+  const data = {
+    name: document.getElementById("pName").value.trim(),
+    description: document.getElementById("pDesc").value.trim(),
+    price: parseFloat(document.getElementById("pPrice").value) || 0,
+    stock: parseInt(document.getElementById("pStock").value) || 0,
+    category: document.getElementById("pCat").value.trim(),
+    image_url: document.getElementById("pImg").value.trim()
+  };
+  if (!data.name || !data.price) return alert("Completeaza numele si pretul!");
+  if (id) {
+    await fetch(API + "/products/" + id, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  } else {
+    await fetch(API + "/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  }
+  resetForm(); loadAdminProducts();
+}
+
+async function editProduct(pid) {
+  const r = await fetch(API + "/products/" + pid);
+  const p = await r.json();
+  document.getElementById("editId").value = p.id;
+  document.getElementById("pName").value = p.name;
+  document.getElementById("pDesc").value = p.description || "";
+  document.getElementById("pPrice").value = p.price;
+  document.getElementById("pStock").value = p.stock;
+  document.getElementById("pCat").value = p.category || "";
+  document.getElementById("pImg").value = p.image_url || "";
+  document.getElementById("formTitle").textContent = "Editeaza Produs #" + p.id;
+  document.getElementById("productForm").scrollIntoView({ behavior: "smooth" });
+}
+
+async function deleteProduct(pid) {
+  if (!confirm("Sigur vrei sa stergi acest produs?")) return;
+  await fetch(API + "/products/" + pid, { method: "DELETE" });
+  loadAdminProducts();
+}
+
+function resetForm() {
+  document.getElementById("editId").value = "";
+  document.getElementById("pName").value = "";
+  document.getElementById("pDesc").value = "";
+  document.getElementById("pPrice").value = "";
+  document.getElementById("pStock").value = "";
+  document.getElementById("pCat").value = "";
+  document.getElementById("pImg").value = "";
+  document.getElementById("formTitle").textContent = "Adauga Produs Nou";
+}
+
+// ORDERS
+async function loadOrders() {
+  const r = await fetch(API + "/orders");
+  const list = await r.json();
+  const tb = document.getElementById("ordTable");
+  if (!list.length) { tb.innerHTML = '<tr><td colspan="6" class="empty-t">Nicio comanda.</td></tr>'; return; }
+  tb.innerHTML = list.map(o =>
+    '<tr><td>#' + o.id + '</td><td>' + esc(o.customer_name) + '</td><td>' + esc(o.customer_email) + '</td><td>' + o.total_amount.toFixed(2) + ' RON</td>' +
+    '<td><span class="badge badge-pending">' + o.status + '</span></td><td>' + (o.created_at || "-") + '</td></tr>'
+  ).join("");
+}
+
+function esc(t) { if (!t) return ""; const d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+</script>
+</body>
+</html>
